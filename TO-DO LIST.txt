@@ -1,0 +1,14 @@
+TO-DO LIST
+
+1) input registration
+2) input checks
+3) command detection
+4) command -a
+5) command -fh
+5) command -fv
+6) command -b   (bonus)
+7) command -bw
+7) command -p
+8) command checks
+9) makefiles structure
+10) report
