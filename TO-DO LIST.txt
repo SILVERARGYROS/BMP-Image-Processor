@@ -8,7 +8,8 @@ TO-DO LIST
 5) command -fv
 6) command -b   (bonus)
 7) command -bw
-7) command -p
-8) command checks
-9) makefiles structure
-10) report
+8) command -p
+9) command checks
+10) free all allocated memory
+11) makefiles structure
+12) report document
