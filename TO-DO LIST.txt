@@ -13,3 +13,7 @@ TO-DO LIST
 10) free all allocated memory
 11) makefiles structure
 12) report document
+
+BONUS IDEAS
+1) command -b   (bonus)
+2) case insensitive commands (bonus)
