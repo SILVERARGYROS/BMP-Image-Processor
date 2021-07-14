@@ -3,17 +3,19 @@ TO-DO LIST
 1) input registration
 2) input checks
 3) command detection
-4) command -a
-5) command -fh
-5) command -fv
-6) command -b   (bonus)
+// 4) command -a
+// 5) command -fh
+// 5) command -fv
+// 6) command -b   (bonus)
 7) command -bw
 8) command -p
 9) command checks
 10) free all allocated memory
-11) makefiles structure
-12) report document
+// 11) makefiles structure
+12) loading screen (BONUS)
+13) report document
 
 BONUS IDEAS
-1) command -b   (bonus)
-2) case insensitive commands (bonus)
+// 1) command -b   (bonus)
+2) case insensitive commands (bonus) 
+3) loading screen (BONUS)

@@ -111,12 +111,12 @@ int writeInfo (FILE *fp, struct bmp_info *info);
 
 // our own function prototypes from main
 
-void freearrays (rgbe** pavlos, rgbe** sygrimis, int x);
+void freearrays (rgbe** mainarray, rgbe** duparray, int x);
 void printattributes (struct bmp_header *h1,struct  bmp_info *h2);
-void flip (rgbe** pavlos, rgbe** sygrimis, int x, int y, char lever);
-void rgrey (rgbe** pavlos, rgbe** sygrimis, int x, int y);
-void agrey (rgbe** pavlos, rgbe** sygrimis, int x, int y, int red, int green, int blue, int percentage);
-;
+void flip (rgbe** mainarray, rgbe** duparray, int x, int y, char lever);
+void rgrey (rgbe** mainarray, rgbe** duparray, int x, int y);
+void agrey (rgbe** mainarray, rgbe** duparray, int x, int y, int red, int green, int blue, int percentage);
+void dublicate (rgbe** mainarray, rgbe** duparray, int x, int y);
 
 
 

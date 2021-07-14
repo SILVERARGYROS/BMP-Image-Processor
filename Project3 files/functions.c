@@ -12,30 +12,62 @@ dit20202@go.uop.gr */
 
 // prototypes
 
-void freearrays (rgbe** pavlos, rgbe** sygrimis, int x)
+void freearrays (rgbe** mainarray, rgbe** duparray, int x)
 {
     int i, j;
     for(i = 0; i < x; i++)
     {
-        free(pavlos[i]);
+        free(mainarray[i]);
     }
-    free(pavlos);
+    free(mainarray);
 
     for(i = 0; i < x; i++)
     {
-        free(sygrimis[i]);
+        free(duparray[i]);
     }
-    free(sygrimis);
+    free(duparray);
 }
 
 void printattributes (struct bmp_header *h1,struct bmp_info *h2)
 {
     // prints all struct attributes
-    printf("DEBUG MESSAGE: successful so far\n");
+    printf("\nFILE DETAILS\n");
+
+    printf("Type: %d\n", h1->bfType);
+    printf("Size: %d\n", h1->bfSize);
+    printf("Reserved1: %d\n", h1->bfReserved1);
+    printf("Reserved2: %d\n", h1->bfReserved2);
+    printf("OffBits: %d\n", h1->bfOffBits);
+
+    printf("Size: %d\n", h2->bmiHeader.biSize);
+    printf("Width: %d\n", h2->bmiHeader.biWidth);
+    printf("Height: %d\n", h2->bmiHeader.biHeight);
+    printf("Planes: %d\n", h2->bmiHeader.biPlanes);
+    printf("BitCount: %d\n", h2->bmiHeader.biBitCount);
+    printf("Compression: %d\n", h2->bmiHeader.biCompression);
+    printf("SizeImage: %d\n", h2->bmiHeader.biSizeImage);
+    printf("XPelsPerMeter: %d\n", h2->bmiHeader.biXPelsPerMeter);
+    printf("YPelsPerMeter: %d\n", h2->bmiHeader.biYPelsPerMeter);
+    printf("ClrUsed: %d\n", h2->bmiHeader.biClrUsed);
+    printf("ClrImportant: %d\n", h2->bmiHeader.biClrImportant);
+    printf("DEBUG MESSAGE: printattributes successful\n");
 }
 
-void flip (rgbe** pavlos, rgbe** sygrimis, int x, int y, char lever)
+void dublicate (rgbe** mainarray, rgbe** duparray, int x, int y)
 {
+    int i, j;
+    for(i = 0; i < x; i++)
+    {
+        for(j = 0; j < y; j++)
+        {
+            duparray[i][j] = mainarray[i][j];
+        }
+    }
+}
+
+void flip (rgbe** mainarray, rgbe** duparray, int x, int y, char lever)
+{
+    // printf("DEBUG MESSAGE: COMMAND DETECTED SUCCESSFULLY\n");
     int i, j;
     for(i = 0; i < x; i++)
     {
@@ -43,34 +75,34 @@ void flip (rgbe** pavlos, rgbe** sygrimis, int x, int y, char lever)
         {
             if(lever == 'h')
             {
-                pavlos[i][j] = sygrimis[(x-1)-i][j];     
+                duparray[i][j] = mainarray[(x-1)-i][j];     
             }
             else if(lever == 'v')
             {
-                pavlos[i][j] = sygrimis[i][(y-1)-j];
+                duparray[i][j] = mainarray[i][(y-1)-j];
             }
         }
     }
 }
 
-void rgrey (rgbe** pavlos, rgbe** sygrimis, int x, int y)
+void rgrey (rgbe** mainarray, rgbe** duparray, int x, int y)
 {
     int sum, i, j;
     for(i = 0; i < x; i++)
     {
         for(j = 0; j < y; j++)
         {
-            sum = (pavlos[i][j].red + pavlos[i][j].green + pavlos[i][j].blue)/3;
-            sygrimis[i][j].red = sum;
-            sygrimis[i][j].green = sum;
-            sygrimis[i][j].blue = sum;
+            sum = (mainarray[i][j].red + mainarray[i][j].green + mainarray[i][j].blue)/3;
+            duparray[i][j].red = sum;
+            duparray[i][j].green = sum;
+            duparray[i][j].blue = sum;
         }
     }
 }
 
-void agrey (rgbe** pavlos, rgbe** sygrimis, int x, int y, int red, int green, int blue, int percentage)
+void agrey (rgbe** mainarray, rgbe** duparray, int x, int y, int red, int green, int blue, int percentage)
 {
     int i, j;
-    rgrey(pavlos, sygrimis, x, y);
+    rgrey(mainarray, duparray, x, y);
     
 }
