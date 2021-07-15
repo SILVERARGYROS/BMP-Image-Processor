@@ -4,12 +4,6 @@
 
 #include <stdio.h>
 
-// our library selection from main
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-
 
 #define OK     1
 #define ERROR  0 
@@ -76,19 +70,6 @@ struct bmp_info {
     struct rgb             bmiColors[256]; /* Image colormap */
 };
 
-
-
-
-// our own structs from main
-typedef struct 
-{
-    unsigned char red;
-    unsigned char green;
-    unsigned char blue;
-}rgbe;
-
-
-
 /*
  * Prototypes...
  */
@@ -104,21 +85,5 @@ int readInfo(FILE *fp, struct bmp_info *info);
 int writeHeader (FILE *fp, struct bmp_info *info); 
 int writeInfo (FILE *fp, struct bmp_info *info); 
 #endif /* !_BITMAP_H_ */
-
-
-
-
-
-// our own function prototypes from main
-
-void freearrays (rgbe** mainarray, rgbe** duparray, int x);
-void printattributes (struct bmp_header *h1,struct  bmp_info *h2);
-void flip (rgbe** mainarray, rgbe** duparray, int x, int y, char lever);
-void rgrey (rgbe** mainarray, rgbe** duparray, int x, int y);
-void agrey (rgbe** mainarray, rgbe** duparray, int x, int y, int red, int green, int blue, int percentage);
-void dublicate (rgbe** mainarray, rgbe** duparray, int x, int y);
-
-
-
 
 

@@ -1,21 +1,40 @@
 TO-DO LIST
 
-1) input registration
-2) input checks
-3) command detection
+// 1) input registration
+// 2) input checks
+    // 2.1) file name (BUG)
+    // 2.2) same file name checks
+    // 2.3) ./bip only check
+// 3) command detection
 // 4) command -a
 // 5) command -fh
 // 5) command -fv
-// 6) command -b   (bonus)
+// 6) command -b   (BONUS)
 7) command -bw
-8) command -p
-9) command checks
+    7.1) math.h (BUG)
+    7.2) ask about distance
+8) command -p4
+    // 8.1) pallete understanding
+    8.2) confirm command concept
+/* 9) command checks */
 10) free all allocated memory
+    10.1) ask to free structs
 // 11) makefiles structure
-12) loading screen (BONUS)
-13) report document
+// 12) loading screen (BONUS)
+// 13) more extras (FAT BONUS)
+14) report document/*  */
+    14.1) ask for file type
+15) polishing/*  */
+16) build/publish final compressed file /*  */
+ 16.1) ask for file contents
+ 16.2) write names on each file 
 
 BONUS IDEAS
-// 1) command -b   (bonus)
-2) case insensitive commands (bonus) 
-3) loading screen (BONUS)
+// 1) command -b   (BONUS)
+// 2) loading screen (BONUS)
+// 3) case insensitive commands (BONUS) 
+// 4) flip 90 left
+// 5) flip 90 right
+// 6) flip 180
+// 7) dublicate image
+// 8) check file2 existance

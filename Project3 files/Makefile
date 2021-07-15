@@ -1,11 +1,11 @@
-OUTPUT: main.o functions.o bmp.o
-	gcc main.o functions.o bmp.o -o bip
+OUTPUT: main.o processing.o bmp.o
+	gcc main.o processing.o bmp.o -o bip
 
-main.o: main.c
+main.o: main.c 
 	gcc -c main.c
 
-functions.o: functions.c
-	gcc -c functions.c
+processing.o: processing.c processing.h
+	gcc -c processing.c
 
-bmp.o: bmp.c bmp.o
+bmp.o: bmp.c bmp.h
 	gcc -c bmp.c
