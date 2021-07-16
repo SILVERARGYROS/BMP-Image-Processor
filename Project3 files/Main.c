@@ -27,7 +27,7 @@ int main (int argc, char *argv[])
     int x,y;                 // array/image dimensions
     rgbe** mainarray;        // main array, where we read the image
     rgbe** duparray;         // dublicate array, where changes will be stored
-    int i,j, z;              // Basic array variables    
+    int i, j, z;             // Basic array variables    
     char* file1;
     char* file2;
     // searching and opening files 
@@ -51,9 +51,9 @@ int main (int argc, char *argv[])
     printf("DEBUG MESSAGE: argc == %d\n", argc);
     if(argc > 3)
     {   
-        printf("DEBUG MESSAGE: before if statement\n");
+        // printf("DEBUG MESSAGE: before if statement\n");
         file2 = strdup(argv[3]);
-        printf("DEBUG MESSAGE: after if statement\n");
+        // printf("DEBUG MESSAGE: after if statement\n");
         strcat(file2, ".bmp");  // rephrasing real file name (adding .bmp)
 
         if(!strcmp(file1, file2))
@@ -74,6 +74,10 @@ int main (int argc, char *argv[])
                 printf("Exiting Programm\n");
                 exit(0);
             }
+        }
+        else
+        {
+            fclose(fpfile2);
         }
         // if command != "-a" then we have putput file
         printf("DEBUG: argv[3] == %s\n", argv[3]);
@@ -113,8 +117,8 @@ int main (int argc, char *argv[])
     // storing arrays' dimensions
     x = h2->bmiHeader.biHeight;
     y = h2->bmiHeader.biWidth;
-    printf("x = %d\n", x);
-    printf("y = %d\n", y);
+    // printf("x = %d\n", x);
+    // printf("y = %d\n", y);
 
 
     //allocating memory for main array
@@ -148,6 +152,7 @@ int main (int argc, char *argv[])
     // printf("DEBUG x == %d", x);
     printf("DEBUG before animation\n");
     printf("\n");
+
     // reading image colors
     for(i = (x-1); i >= 0; i--)
     {
@@ -198,7 +203,7 @@ int main (int argc, char *argv[])
         // prints attributes
         printattributes(h1, h2);
         outputcheck = 0;         // doesnt have output file name
-        printf("DEBUG MESSAGE: outputcheck == %d\n", outputcheck);
+        // printf("DEBUG MESSAGE: outputcheck == %d\n", outputcheck);
     }
     else if(commandcheck(command, "-fh"))   
     {
@@ -210,14 +215,14 @@ int main (int argc, char *argv[])
         // Y-axis flip
         flip(mainarray, duparray, x, y, 'v');
     }
-    else if(commandcheck(command, "-bw"))   
+    else if(commandcheck(strtok(command, "_"), "-bw"))   
     {
         // artistic grey
         int red, green, blue;
         char* wholecommand = argv[1];
         printf("DEBUG: DEBUG3: file2 == %s\n", file2);
 
-        strtok(wholecommand, "_");
+        
         char* color = strtok(NULL, "_");
 
         if(!strcmp(color, "red"))
@@ -324,9 +329,23 @@ int main (int argc, char *argv[])
         }
         agrey(mainarray, duparray, x, y, red, green, blue, percentage);
     }
-    else if(commandcheck(command, "-p"))                         
+    else if(command[0] == '-' && (command[1] == 'p' || command[1] == 'P') && (command[2] > 47 && command[2] < 58))                         
     {
+        int restriction_num;
         // pallet color restriction
+        strtok(command,"p");
+        restriction_num = atoi(strtok(NULL,"\0"));
+        if(/* restriction_num > 0 &&  */restriction_num < 256 && restriction_num % 2 == 0)
+        {
+            palette(mainarray, duparray, x, y, restriction_num);
+        }
+        else
+        {
+            printf("DEBUG MESSAGE: command was wrong. Please try again\n");
+            // frees everything
+
+            exit(1);
+        }
     }
     /* BONUS COMMANDS*/
     else if(commandcheck(command, "-b"))
@@ -342,15 +361,15 @@ int main (int argc, char *argv[])
     else if(commandcheck(command, "-ndl"))
     {
         // rotate image -90 degrees
-        printf("DEBUG FLAAAG\n");
+        // printf("DEBUG FLAAAG\n");
         duparray = realloc(duparray, y * sizeof(rgbe*));
-        printf("DEBUG FLAAA2\n");
+        // printf("DEBUG FLAAA2\n");
 
         for(i = 0; i < y; i++)
         {
             duparray[i] = realloc(duparray[i], x * sizeof(rgbe));
         }
-        printf("DEBUG FLAAA3\n");
+        // printf("DEBUG FLAAA3\n");
 
         rotate_left(mainarray, duparray, x, y);
         h2->bmiHeader.biHeight = y;

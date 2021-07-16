@@ -11,7 +11,7 @@ dit20202@go.uop.gr */
 #include "bmp.h"
 #include "processing.h"
 
-// #include <math.h>
+#include <math.h>
 // prototypes
 
 
@@ -70,7 +70,8 @@ void flip (rgbe** mainarray, rgbe** duparray, int x, int y, char lever)
                 duparray[i][j] = mainarray[i][(y-1)-j];
             }
         }
-        loading_screen ("flipping image", i, x);
+        printf("DEBUG MESSAGE: choto matte wtf\n");
+        loading_screen ("flipping image", i, x-1);
     }
 }
 
@@ -86,15 +87,20 @@ void rgrey (rgbe** mainarray, rgbe** duparray, int x, int y)
             duparray[i][j].green = sum;
             duparray[i][j].blue = sum;
         }
-        loading_screen ("flipping image", i, x);
+        loading_screen ("removing colors", i, x-1);
     }
+    printf("DEBUG MESSAGE: left rgrey\n");
 }
 
 void agrey (rgbe** mainarray, rgbe** duparray, int x, int y, int red, int green, int blue, int percentage)
 {
     int i, j, quantity, count;
-    double color_distance;
+    float color_distance;
     unsigned char pred, pgreen, pblue;
+    float temp1;
+    int temp2, temp3;
+    int numofpixels, k, l;
+
 
     printf("DEBUG: inside agrey\n");
 
@@ -103,8 +109,32 @@ void agrey (rgbe** mainarray, rgbe** duparray, int x, int y, int red, int green,
     quantity = 0;
     count = 0;
 
-    // Counting pixels of input color
-    for(i = 0; i < x; i ++)
+    // allocating memory for helping arrays
+    float* distance_array;
+    distance_array = (float*) malloc (sizeof(float) *x*y);
+    if(distance_array == NULL)
+    {
+        exit(0);
+    }
+
+    int** pixelcords_array;
+    pixelcords_array = (int**) malloc (sizeof(int*) *x*y);
+    if(pixelcords_array == NULL)
+    {
+        exit(0);
+    }
+    for(j = 0; j < x*y; j++)
+    {
+        pixelcords_array[j] = (int*) malloc (sizeof(int) *2);
+        if(pixelcords_array[j] == NULL)
+        {
+            exit(0);
+        }
+    }
+
+    printf("DEBUG MESASAGE: after all mallocs\n");
+    // filling helping arrays
+    for(i = 0; i < x; i++)
     {
         for(j = 0; j < y; j++)
         {
@@ -112,14 +142,67 @@ void agrey (rgbe** mainarray, rgbe** duparray, int x, int y, int red, int green,
             pgreen  = mainarray[i][j].green;
             pblue   = mainarray[i][j].blue;
 
-            color_distance = euclidean_distance(red, green, blue, pred, pgreen, pblue);
-            if(color_distance < ACCEPTABLE_COLOR_DISTANCE)
-            {
-                quantity++;
-            }
+            distance_array[(i*x)+j] = euclidean_distance(red, green, blue, pred, pgreen, pblue);
+
+            pixelcords_array[(i*x)+j][0] = i;
+            pixelcords_array[(i*x)+j][1] = j;
         }
+        printf("======================================\n");
+        // loading_screen ("setting up variables", i, x-1);
     }
 
+    printf("going in second\n");
+    
+    // sorting the arrays (bubblesort)
+    for(i = 1; i < x*y; i++)
+    {
+        for(j = x*y-1; j >= i; j--)
+        {
+            if(distance_array[j-1] > distance_array[j])
+            {
+                // sorting distance_array
+                temp1 = distance_array[j-1];
+                distance_array[j-1] = distance_array[j];
+                distance_array[j] = temp1;
+                
+                // sorting pixelcords_array[0]
+                temp2 = pixelcords_array[0][j-1];
+                pixelcords_array[0][j-1] = pixelcords_array[0][j];
+                pixelcords_array[0][j] = temp2;
+
+                // sorting pixelcords_array[1]
+                temp2 = pixelcords_array[1][j-1];
+                pixelcords_array[1][j-1] = pixelcords_array[1][j];
+                pixelcords_array[1][j] = temp2;
+            }
+        }
+        loading_screen ("setting up variables", i, y*x-1);
+    }
+
+    // percentage == 10%;
+    // 1234 pixels 10% ???
+    numofpixels = (x*y) * percentage / 100;
+
+    for(i = 0; i < numofpixels; i++)
+    {
+        k = pixelcords_array[0][i];
+        l = pixelcords_array[1][i];
+        duparray[k][l] = mainarray[k][l];      
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /* // colorizing touches
     for(i = 0; i < x; i ++)
     {
         for(j = 0; j < y; j++)
@@ -141,26 +224,47 @@ void agrey (rgbe** mainarray, rgbe** duparray, int x, int y, int red, int green,
             }
             loading_screen ("adding final touches", (count/quantity) * 100, percentage);
         }
-    }
+    } */
     printf("DEBUG: outside agrey\n");
 }
 
-double euclidean_distance (int ired, int igreen, int iblue, int pred, int pgreen, int pblue)
+float euclidean_distance (int ired, int igreen, int iblue, int pred, int pgreen, int pblue)
 {
     int x1, x2, x3;
-    double sum;
-    x1 = ired + pred;
+    float sum;
+    x1 = ired - pred;
     x1 = x1 * x1;
 
-    x2 = igreen + pgreen;
+    x2 = igreen - pgreen;
     x2 = x2 * x2;
 
-    x3 = iblue + pblue;
+    x3 = iblue - pblue;
     x3 = x3 * x3;
 
     sum = x1 + x2 + x3;
-    // sum = pow(sum, 0.5);
-    return sum;
+    // printf("DEBUG MESSAGE: sum == %.2f\n", sum);
+    // sum = sqrt(sum);
+    // printf("BEFORE ROOT\n");
+
+    /* for(root = 0.01; root*root < sum; root = root + 0.01)
+    {
+        // the root is modified automatically so the rest is empty
+    } */
+
+    float temp, root;
+    root = sum/2;
+    temp = 0;;
+    while(root != temp)
+    {
+        temp = root;
+        root = (sum/temp + temp)/2;
+    }
+
+    // return sqrt(sum);
+    // printf("after ROOT\n");
+    // printf("DEBUG MESSAGE: root == %.2f\n", root);
+    // exit(0); // Bebug exit
+    return root;
     return 0;
 }
 
@@ -226,8 +330,8 @@ void rotate_up(rgbe **mainarray, rgbe **duparray, int x, int y)
             duparray[i][j].red =    mainarray[(x-1)-i][(y-1)-j].red;
             duparray[i][j].green =  mainarray[(x-1)-i][(y-1)-j].green;
             duparray[i][j].blue =   mainarray[(x-1)-i][(y-1)-j].blue;
-            loading_screen ("rotating image", i, x-1);
         }
+        loading_screen ("rotating image", i, x-1);
     }
 }
 
@@ -243,8 +347,8 @@ void rotate_left(rgbe **mainarray, rgbe **duparray, int x, int y)
             duparray[(y-1)-j][i].red =    mainarray[i][j].red;
             duparray[(y-1)-j][i].green =  mainarray[i][j].green;
             duparray[(y-1)-j][i].blue =   mainarray[i][j].blue;
-            loading_screen ("rotating image", i, x-1);
         }
+        loading_screen ("rotating image", i, x-1);
     }
 }
 
@@ -259,8 +363,8 @@ void rotate_right(rgbe **mainarray, rgbe **duparray, int x, int y)
             duparray[j][(x-1)-i].red =    mainarray[i][j].red;
             duparray[j][(x-1)-i].green =  mainarray[i][j].green;
             duparray[j][(x-1)-i].blue =   mainarray[i][j].blue;
-            loading_screen ("rotating image", i, x-1);
         }
+        loading_screen ("rotating image", i, x-1);
     }
 }
 
@@ -293,7 +397,7 @@ void loading_screen (char message[], int base, int top)
     float completion_percentage;
 
     printf("\r%s",message);
-    completion_percentage = (float) ((base/1.0)/top)*100;
+    completion_percentage =  ((float) (base)/top)*100;
     // printf("DEBUG base == %d\n", base);
     // printf("DEBUG top == %d\n", top);
     // printf("DEBUG percentage == %f\n", completion_percentage);
@@ -334,7 +438,7 @@ void loading_screen (char message[], int base, int top)
     {
         printf("[##########]%.2f%%", completion_percentage);
     }
-    delay(5);
+    delay(3); 
 }
 
 void delay(int seconds) 
@@ -349,4 +453,60 @@ void delay(int seconds)
     // looping till required time is not achieved 
     while (clock() < start_time + ms) 
         ; 
+}
+
+void palette (rgbe** mainarray, rgbe** duparray, int x, int y, int restriction_num)
+{
+    printf("DEBUG MESSAGE: inside pallete\n");
+
+    int i,j;
+    int space, base, top;
+
+    // pallet restriction
+    space = 256 / restriction_num;
+
+    // pixel conversion
+
+    for(i = 0; i < x; i++)
+    {
+        for(j = 0; j < y; j++)
+        {
+            for(base = 0; base < 256; base = base + space)
+            {
+                /* if(!i && !j)
+                {
+                    printf("DEBUG: base == %d\n", base);
+                    printf("DEBUG: top == %d\n", base + space - 1);
+                } */
+                top = base + space - 1;
+                if(mainarray[i][j].red >= base && mainarray[i][j].red <= top)
+                {
+                    duparray[i][j].red = (unsigned char) base;
+                    break;
+                }
+            }
+            for(base = 0; base < 256; base = base + space)
+            {
+                top = base + space - 1;
+                if(mainarray[i][j].green >= base && mainarray[i][j].green <= top)
+                {
+                    duparray[i][j].green = (unsigned char) base;
+                    break;
+                }
+            }
+
+            for(base = 0; base < 256; base = base + space)
+            {
+                top = base + space - 1;
+                if(mainarray[i][j].blue >= base && mainarray[i][j].blue <= top)
+                {
+                    duparray[i][j].blue = (unsigned char) base;
+                    break;
+                }
+            }
+
+        }
+        loading_screen ("changing colors", i, x-1);
+    }
+    printf("DEBUG MESSAGE: leaving pallete\n");
 }
