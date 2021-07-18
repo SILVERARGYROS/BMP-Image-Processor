@@ -67,8 +67,15 @@ int main (int argc, char *argv[])
         if(fpfile2 = fopen(file2, "r"))
         {
             int answer;
-            printf("file named '%s' already exists. Are you sure you want to overwrite?? (0 == yes || 1 == no)\n", file2);
-            scanf("%d", &answer);
+            printf("file named '%s' already exists. Are you sure you want to overwrite?? (0 == yes || 1 == no)\n>", file2);
+            do
+            {
+                scanf("%d", &answer);
+                if(answer != 0 && answer!= 1)
+                {
+                    printf("Invalid input. Please try again\n>");
+                }
+            }while(answer != 0 && answer!= 1);
             if(answer)
             {
                 fclose(fpfile1);

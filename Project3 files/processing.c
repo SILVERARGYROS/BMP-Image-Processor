@@ -58,11 +58,11 @@ void flip (rgbe** mainarray, rgbe** duparray, int x, int y, char lever)
     {
         for(j = 0; j < y; j++)
         {
-            if(lever == 'h')
+            if(lever == 'v')
             {
                 duparray[i][j] = mainarray[(x-1)-i][j];     
             }
-            else if(lever == 'v')
+            else if(lever == 'h')
             {
                 duparray[i][j] = mainarray[i][(y-1)-j];
             }
@@ -194,36 +194,36 @@ void loading_screen (char message[], int base, int top, int miliseconds)
     // printf("DEBUG percentage == %f\n", completion_percentage);
     if(completion_percentage < 10.0)
     {
-        printf("[..........]%.2f%%", completion_percentage);
+        printf("[..........]%.2f%%          ", completion_percentage);
     }
     else if(completion_percentage < 20.0)
     {
-        printf("[#.........]%.2f%%", completion_percentage);
+        printf("[#.........]%.2f%%          ", completion_percentage);
     }
     else if(completion_percentage < 30.0)
     {
-        printf("[##........]%.2f%%", completion_percentage);
+        printf("[##........]%.2f%%          ", completion_percentage);
     }else if(completion_percentage < 40.0)
     {
-        printf("[###.......]%.2f%%", completion_percentage);
+        printf("[###.......]%.2f%%          ", completion_percentage);
     }else if(completion_percentage < 50.0)
     {
-        printf("[####......]%.2f%%", completion_percentage);
+        printf("[####......]%.2f%%          ", completion_percentage);
     }else if(completion_percentage < 60.0)
     {
-        printf("[#####.....]%.2f%%", completion_percentage);
+        printf("[#####.....]%.2f%%          ", completion_percentage);
     }else if(completion_percentage < 70.0)
     {
-        printf("[######....]%.2f%%", completion_percentage);
+        printf("[######....]%.2f%%          ", completion_percentage);
     }else if(completion_percentage < 80.0)
     {
-        printf("[#######...]%.2f%%", completion_percentage);
+        printf("[#######...]%.2f%%          ", completion_percentage);
     }else if(completion_percentage < 90.0)
     {
-        printf("[########..]%.2f%%", completion_percentage);
+        printf("[########..]%.2f%%          ", completion_percentage);
     }else if(completion_percentage < 95.0)
     {
-        printf("[#########.]%.2f%%", completion_percentage);
+        printf("[#########.]%.2f%%          ", completion_percentage);
     }
     else
     {
