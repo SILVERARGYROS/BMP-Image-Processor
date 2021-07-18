@@ -28,18 +28,17 @@ int main (int argc, char *argv[])
     rgbe** mainarray;        // main array, where we read the image
     rgbe** duparray;         // dublicate array, where changes will be stored
     int i, j, z;             // Basic array variables    
-    char* file1;
-    char* file2;
+    char* file1,* file2;     // file names
+
     // searching and opening files 
-    
     file1 = strdup(argv[2]);
     strcat(file1, ".bmp");  // rephrasing real file name (adding .bmp)
 
 
     // debugging block
-    printf("DEBUG: argv[2] == %s\n", argv[2]);
+    /* printf("DEBUG: argv[2] == %s\n", argv[2]);
     printf("DEBUG: file1 == %s\n", file1);
-    printf("=======\n");
+    printf("=======\n"); */
 
 
     fpfile1 = fopen(file1, "r");
@@ -48,20 +47,21 @@ int main (int argc, char *argv[])
         printf("file named '%s' could not be opened\n", file1);
         exit(1);
     }
-    printf("DEBUG MESSAGE: argc == %d\n", argc);
+    // printf("DEBUG MESSAGE: argc == %d\n", argc);
     if(argc > 3)
     {   
-        // printf("DEBUG MESSAGE: before if statement\n");
         file2 = strdup(argv[3]);
-        // printf("DEBUG MESSAGE: after if statement\n");
         strcat(file2, ".bmp");  // rephrasing real file name (adding .bmp)
 
+        // comparing file names
         if(!strcmp(file1, file2))
         {
             printf("Input file and output file must NOT be the same file.\n");
             fclose(fpfile1);
             exit(1);
         }
+
+        // checking if file2 already exists ad ask permission to overwrite
         if(fpfile2 = fopen(file2, "r"))
         {
             int answer;
@@ -79,9 +79,8 @@ int main (int argc, char *argv[])
         {
             fclose(fpfile2);
         }
-        // if command != "-a" then we have putput file
-        printf("DEBUG: argv[3] == %s\n", argv[3]);
-        printf("DEBUG: DEBUG: file2 == %s\n", file2);
+        /* printf("DEBUG: argv[3] == %s\n", argv[3]);
+        printf("DEBUG: DEBUG: file2 == %s\n", file2); */
         fpfile2 = fopen(file2, "w");
         if(fpfile2 == NULL)
         {
@@ -120,7 +119,6 @@ int main (int argc, char *argv[])
     // printf("x = %d\n", x);
     // printf("y = %d\n", y);
 
-
     //allocating memory for main array
     mainarray = (rgbe**) malloc(sizeof(rgbe*) * x);
     if(mainarray == NULL)
@@ -141,17 +139,19 @@ int main (int argc, char *argv[])
             exit(1);
         }
     }
-    // dont forget the Putin
+
+    // calculating padding
     int extrabytes = 0;
     while((y * 3 + extrabytes) % 4 != 0)
     {
         extrabytes++;
     }
-    // printf("DEBUG: extrabytes == %d\n", extrabytes);
 
-    // printf("DEBUG x == %d", x);
+    // debugging block
+    /* printf("DEBUG: extrabytes == %d\n", extrabytes);
+    printf("DEBUG x == %d", x);
     printf("DEBUG before animation\n");
-    printf("\n");
+    printf("\n"); */
 
     // reading image colors
     for(i = (x-1); i >= 0; i--)
@@ -163,14 +163,12 @@ int main (int argc, char *argv[])
             fread(&(mainarray[i][j].green), sizeof(unsigned char), 1, fpfile1);
             fread(&(mainarray[i][j].red), sizeof(unsigned char), 1, fpfile1);
             // printf("DEBUG MESSAGE: blue:%d green:%d red:%d\n",mainarray[i][j].blue, mainarray[i][j].green, mainarray[i][j].red);
-            // fread(&mainarray[i][j], sizeof(rgbe), 1, fpfile1);
         }
         loading_screen ("loading image",(x-1)-i, x-1, 3);
-        fseek(fpfile1, extrabytes, SEEK_CUR); //skips bytes from patting
+        fseek(fpfile1, extrabytes, SEEK_CUR); //skips bytes from padding
     }
-    printf("DEBUG: good so far (read 1st)\n");
-
-        printf("DEBUG: DEBUG1.5.5.5.5.5: file2 == %s\n", file2);
+    /* printf("DEBUG: good so far (read 1st)\n");
+    printf("DEBUG: DEBUG1.5.5.5.5.5: file2 == %s\n", file2); */
 
     // allocating memory for secondary array
     duparray = (rgbe**) malloc(sizeof(rgbe*) * x);
@@ -192,11 +190,11 @@ int main (int argc, char *argv[])
             exit(1);
         }
     }
-        // printf("DEBUG: DEBUG2: file2 == %s\n", file2);
+    // printf("DEBUG: DEBUG2: file2 == %s\n", file2);
 
     // detects and verifies input command
     char* command   = strdup(argv[1]);  // storing command
-    int outputcheck = 1;        // flag to produce output file
+    int outputcheck = 1;                // flag to produce output file
 
     if(commandcheck(command, "-a"))                              
     {
@@ -220,11 +218,11 @@ int main (int argc, char *argv[])
         // artistic grey
         int red, green, blue;
         char* wholecommand = argv[1];
-        printf("DEBUG: DEBUG3: file2 == %s\n", file2);
-
-        
         char* color = strtok(NULL, "_");
 
+        // printf("DEBUG: DEBUG3: file2 == %s\n", file2);
+        
+        // creates input color
         if(!strcmp(color, "red"))
         {
             red = 255;
@@ -296,8 +294,8 @@ int main (int argc, char *argv[])
             red = 0;
             green = 0;
             blue = 128;
-        }
-        else if(color == NULL)
+        }   
+        else if(color == NULL)  //if no color was entered
         {
             printf("Error! Color not specified\n\n");
             fclose(fpfile1);
@@ -306,7 +304,7 @@ int main (int argc, char *argv[])
             printf("Oops...file named '%s' got corrupted! File deleted automatically\n", file2);
             exit(1);
         }
-        else
+        else                    //wrong input as color
         {
             printf("Error! Color named '%s' does not exists\n", color);
             fclose(fpfile1);
@@ -316,9 +314,10 @@ int main (int argc, char *argv[])
             exit(1);
         }
 
+        // finds input color percentage
         char* number = strtok(NULL, "\0");
         int percentage = atoi(number);
-        if(percentage > 100 || percentage <= 0)
+        if(percentage > 100 || percentage < 0)
         {
             printf("Error with entered percentage!\n");
             fclose(fpfile1);
@@ -331,24 +330,27 @@ int main (int argc, char *argv[])
     }
     else if(command[0] == '-' && (command[1] == 'p' || command[1] == 'P') && (command[2] > 47 && command[2] < 58))                         
     {
-        printf("DEBUG MESSAGE: INSIDE COMMANDS IF STATEMENT\n");
+        // printf("DEBUG MESSAGE: INSIDE COMMANDS IF STATEMENT\n");
         int restriction_num;
+
         // pallet color restriction
         strtok(command,"p");
         restriction_num = atoi(strtok(NULL,"\0"));
-        if(/* restriction_num > 0 &&  */restriction_num < 256 && restriction_num % 2 == 0)
+        if(restriction_num < 256 && restriction_num % 2 == 0)
         {
             palette(mainarray, duparray, x, y, restriction_num);
         }
         else
         {
-            printf("DEBUG MESSAGE: command was wrong. Please try again\n");
-            // frees everything
+            printf("Error: command was wrong. Terminating programm\n");
 
-            exit(1);
+            // frees everything and exits
+            fclose(file1);
+            fclose(file2);
+            free_all_mem(mainarray, duparray, x, h1, h2, file1, file2);
         }
     }
-    /* BONUS COMMANDS*/
+    /* BONUS COMMANDS */
     else if(commandcheck(command, "-b"))
     {
         // regular grey
@@ -361,11 +363,10 @@ int main (int argc, char *argv[])
     }
     else if(commandcheck(command, "-rl"))
     {
-        // rotate image -90 degrees
+        // rotate image to the left
         // printf("DEBUG FLAAAG\n");
         duparray = realloc(duparray, y * sizeof(rgbe*));
         // printf("DEBUG FLAAA2\n");
-
         for(i = 0; i < y; i++)
         {
             duparray[i] = realloc(duparray[i], x * sizeof(rgbe));
@@ -373,25 +374,33 @@ int main (int argc, char *argv[])
         // printf("DEBUG FLAAA3\n");
 
         rotate_left(mainarray, duparray, x, y);
+
+        // switching image dimensions
         h2->bmiHeader.biHeight = y;
         h2->bmiHeader.biWidth  = x;
-        int temp = x;
+
+        // switching array dimensions to match universal fwrite
+        int temp;
+        temp = x;
         x = y;
         y = temp;
     }
     else if(commandcheck(command, "-rr"))
     {
-        // rotate image 90 degrees
-        printf("DEBUG MESSAGE: before rotate_left\n");
-        printf("DEBUG MESSAGE: before rotate_left\n");
+        // rotate image to the right
+        // printf("DEBUG MESSAGE: before rotate_right\n");
         duparray = realloc(duparray, y * sizeof(rgbe*));
         for(i = 0; i < y; i++)
         {
             duparray[i] = realloc(duparray[i], x * sizeof(rgbe));
         }
         rotate_right(mainarray, duparray, x, y);
+
+        // switching image dimensions
         h2->bmiHeader.biHeight = y;
         h2->bmiHeader.biWidth  = x;
+
+        // switching array dimensions to match universal fwrite
         int temp;
         temp = x;
         x = y;
@@ -399,21 +408,20 @@ int main (int argc, char *argv[])
     }
     else if(commandcheck(command, "-ru"))
     {
-        printf("DEBUG MESSAGE: before rotate_right\n");
+        // printf("DEBUG MESSAGE: before rotate_right\n");
         // rotate image 180 degrees
         rotate_up(mainarray, duparray, x, y);
     }
-    /* BONUS COMMANDS*/
+    /* BONUS COMMANDS */
     else
     {
         printf("Invalid input. Command '%s' does not exist\n", argv[1]);
         freearrays(mainarray, duparray, x);
-        /* free(mainarray);
-        free(duparray); */
-        exit(1);
     }
     
-    printf("DEBUG MESSAGE: outputcheck == %d\n", outputcheck);
+    // printf("DEBUG MESSAGE: outputcheck == %d\n", outputcheck);\
+    
+    // output file check
     if(outputcheck)
     {
         writeHeader(fpfile2, h2);
@@ -458,12 +466,13 @@ int main (int argc, char *argv[])
         // printf("DEBUG: extrabytes == %d\n", extrabytes);
     }
 
-    // closing used files
+    // closing used files to avoid corruption
     fclose(fpfile1);
     if(argc > 3)
     {
         fclose(fpfile2);
     }
+    printf("\nProcess successful\n");
 
     //frees all allocated memmory
     if(commandcheck(command, "-ndl") || commandcheck(command, "-ndr"))
@@ -477,13 +486,6 @@ int main (int argc, char *argv[])
     {
         free_all_mem(mainarray, duparray, x, h1, h2, file1, file2);
     }
-
-
-    /* freearrays(mainarray, duparray, x);
-    free(h1);
-    free(h2); */
-
-    printf("\nProcess successful\n");
-    // printf("DEBUG MESSAGE: programm exiting normally\n");
+    
     return 0;
 }
