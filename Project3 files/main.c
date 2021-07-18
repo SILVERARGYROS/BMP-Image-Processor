@@ -62,6 +62,8 @@ int main (int argc, char *argv[])
         }
 
         // checking if file2 already exists ad ask permission to overwrite
+        // printf("DEBUG before fpfile2\n");
+
         if(fpfile2 = fopen(file2, "r"))
         {
             int answer;
@@ -75,13 +77,10 @@ int main (int argc, char *argv[])
                 exit(0);
             }
         }
-        else
-        {
-            fclose(fpfile2);
-        }
+        
         /* printf("DEBUG: argv[3] == %s\n", argv[3]);
         printf("DEBUG: DEBUG: file2 == %s\n", file2); */
-        fpfile2 = fopen(file2, "w");
+        fpfile2 = fopen(file2, "w+");
         if(fpfile2 == NULL)
         {
             printf("file named '%s' could not be opened\n", file2);
@@ -89,6 +88,7 @@ int main (int argc, char *argv[])
             exit(1);
         }
     }
+        // printf("DEBUG before malloc 1\n");
 
     // allocating memory and reading structs
     struct bmp_header *h1;
@@ -101,7 +101,8 @@ int main (int argc, char *argv[])
         exit(1);
     }
     readHeader(fpfile1, h1);
-
+    
+    // printf("DEBUG before malloc 2\n");
     struct bmp_info *h2;
     h2 = (struct bmp_info*) malloc (sizeof(struct bmp_info));
     if(h2 == NULL)
@@ -118,9 +119,11 @@ int main (int argc, char *argv[])
     y = h2->bmiHeader.biWidth;
     // printf("x = %d\n", x);
     // printf("y = %d\n", y);
-
+    // printf("DEBUG\n");
+    // printf("DEBUG before malloc 3\n");
+ 
     //allocating memory for main array
-    mainarray = (rgbe**) malloc(sizeof(rgbe*) * x);
+    mainarray = (rgbe **) malloc(sizeof(rgbe *) * x);
     if(mainarray == NULL)
     {
         printf("Not enough memory. Please download more ram 3.\n");
@@ -130,7 +133,7 @@ int main (int argc, char *argv[])
     }
     for(i = 0; i < x; i++)
     {
-        mainarray[i] = (rgbe*) malloc(sizeof(rgbe) * y);
+        mainarray[i] = (rgbe *) malloc(sizeof(rgbe) * y);
         if(mainarray[i] == NULL)
         {
             printf("Not enough memory. Please download more ram 4.\n");
@@ -139,6 +142,8 @@ int main (int argc, char *argv[])
             exit(1);
         }
     }
+    // printf("DEBUG before malloc 4\n");
+
 
     // calculating padding
     int extrabytes = 0;
@@ -194,13 +199,19 @@ int main (int argc, char *argv[])
 
     // detects and verifies input command
     char* command   = strdup(argv[1]);  // storing command
-    int outputcheck = 1;                // flag to produce output file
 
     if(commandcheck(command, "-a"))                              
     {
         // prints attributes
         printattributes(h1, h2);
-        outputcheck = 0;         // doesnt have output file name
+        for(i = 0; i < x; i++)
+        {
+            free(mainarray[i]);
+        }
+        free(mainarray);
+        fclose(fpfile1);
+        printf("\nProcess successful\n");
+        exit(0);
         // printf("DEBUG MESSAGE: outputcheck == %d\n", outputcheck);
     }
     else if(commandcheck(command, "-fh"))   
@@ -345,8 +356,8 @@ int main (int argc, char *argv[])
             printf("Error: command was wrong. Terminating programm\n");
 
             // frees everything and exits
-            fclose(file1);
-            fclose(file2);
+            fclose(fpfile1);
+            fclose(fpfile2);
             free_all_mem(mainarray, duparray, x, h1, h2, file1, file2);
         }
     }
@@ -422,49 +433,47 @@ int main (int argc, char *argv[])
     // printf("DEBUG MESSAGE: outputcheck == %d\n", outputcheck);\
     
     // output file check
-    if(outputcheck)
+   
+    writeHeader(fpfile2, h2);
+    writeInfo(fpfile2, h2);
+
+    /* printf("HEAVY DEBUGGING MESSAGE:\n\n");
+    for(i = 0; i < x; i++)
     {
-        writeHeader(fpfile2, h2);
-        writeInfo(fpfile2, h2);
-
-        /* printf("HEAVY DEBUGGING MESSAGE:\n\n");
-        for(i = 0; i < x; i++)
+        for(j = 0; j < y; j++)
         {
-            for(j = 0; j < y; j++)
-            {
-                // printf("duparray[%d][%d]: blue:%d green%d: red:%d\n",i, j, duparray[i][j].blue, duparray[i][j].green, duparray[i][j].red);
-                fwrite(&(duparray[i][j].blue), sizeof(unsigned char), 1, fpfile2);
-                fwrite(&(duparray[i][j].green), sizeof(unsigned char), 1, fpfile2);
-                fwrite(&(duparray[i][j].red), sizeof(unsigned char), 1, fpfile2);
-            }
-        } */
-
-        // calculating padding again in case of new dimensions
-        extrabytes = 0;
-        while((y * 3 + extrabytes) % 4 != 0)
-        {
-            extrabytes++;
+            // printf("duparray[%d][%d]: blue:%d green%d: red:%d\n",i, j, duparray[i][j].blue, duparray[i][j].green, duparray[i][j].red);
+            fwrite(&(duparray[i][j].blue), sizeof(unsigned char), 1, fpfile2);
+            fwrite(&(duparray[i][j].green), sizeof(unsigned char), 1, fpfile2);
+            fwrite(&(duparray[i][j].red), sizeof(unsigned char), 1, fpfile2);
         }
+    } */
 
-        // write output file from secondary array (duparray) 
-        unsigned char nullbyte = 0;
-        for(i = (x-1); i >= 0; i--)
-        {
-            for(j = 0; j < y; j++)
-            {
-                // printf("DEBUG: good so far i == %d j == %d\n", i, j);
-                fwrite(&(duparray[i][j].blue), sizeof(unsigned char), 1, fpfile2);
-                fwrite(&(duparray[i][j].green), sizeof(unsigned char), 1, fpfile2);
-                fwrite(&(duparray[i][j].red), sizeof(unsigned char), 1, fpfile2);
-            }
-            for(z = 0; z < extrabytes; z++)
-            {
-                fwrite(&(nullbyte), sizeof(unsigned char), 1, fpfile2);
-            }
-            loading_screen ("finalizing image", (x-1)-i, x-1, 3);
-        }
-        // printf("DEBUG: extrabytes == %d\n", extrabytes);
+    // calculating padding again in case of new dimensions
+    extrabytes = 0;
+    while((y * 3 + extrabytes) % 4 != 0)
+    {
+        extrabytes++;
     }
+
+    // write output file from secondary array (duparray) 
+    unsigned char nullbyte = 0;
+    for(i = (x-1); i >= 0; i--)
+    {
+        for(j = 0; j < y; j++)
+        {
+            // printf("DEBUG: good so far i == %d j == %d\n", i, j);
+            fwrite(&(duparray[i][j].blue), sizeof(unsigned char), 1, fpfile2);
+            fwrite(&(duparray[i][j].green), sizeof(unsigned char), 1, fpfile2);
+            fwrite(&(duparray[i][j].red), sizeof(unsigned char), 1, fpfile2);
+        }
+        for(z = 0; z < extrabytes; z++)
+        {
+            fwrite(&(nullbyte), sizeof(unsigned char), 1, fpfile2);
+        }
+        loading_screen ("finalizing image", (x-1)-i, x-1, 3);
+    }
+    // printf("DEBUG: extrabytes == %d\n", extrabytes);
 
     // closing used files to avoid corruption
     fclose(fpfile1);

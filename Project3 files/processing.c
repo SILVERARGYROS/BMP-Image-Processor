@@ -377,7 +377,7 @@ void agrey (rgbe** mainarray, rgbe** duparray, int x, int y, int red, int green,
             numofele++;
             
             // gives more feedback but is slower. Better for user
-            loading_screen ("setting up variables", i*y + j, (x-1) * (y-1), 0); 
+            loading_screen ("setting up variables", i*y + j, x*y, 0); 
         }
 
         // faster but less feedback. Better for testing
