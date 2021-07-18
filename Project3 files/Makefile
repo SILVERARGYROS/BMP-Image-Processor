@@ -1,5 +1,5 @@
 OUTPUT: main.o processing.o bmp.o
-	gcc main.o processing.o bmp.o -o bip
+	gcc main.o processing.o bmp.o -lm -o bip
 
 main.o: main.c 
 	gcc -c main.c

@@ -165,7 +165,7 @@ int main (int argc, char *argv[])
             // printf("DEBUG MESSAGE: blue:%d green:%d red:%d\n",mainarray[i][j].blue, mainarray[i][j].green, mainarray[i][j].red);
             // fread(&mainarray[i][j], sizeof(rgbe), 1, fpfile1);
         }
-        loading_screen ("loading image",(x-1)-i, x-1);
+        loading_screen ("loading image",(x-1)-i, x-1, 3);
         fseek(fpfile1, extrabytes, SEEK_CUR); //skips bytes from patting
     }
     printf("DEBUG: good so far (read 1st)\n");
@@ -231,13 +231,13 @@ int main (int argc, char *argv[])
             green = 0;
             blue = 0;
         }
-        else if(color == "lime")
+        else if(!strcmp(color, "lime"))
         {
             red = 0;
             green = 255;
             blue = 0;
         }
-        else if(color == "blue")
+        else if(!strcmp(color, "blue"))
         {
             red = 0;
             green = 0;
@@ -249,49 +249,49 @@ int main (int argc, char *argv[])
             green = 255;
             blue = 0;
         }
-        else if(color == "cyan" || color == "aqua")
+        else if(!strcmp(color, "cyan") || !strcmp(color, "aqua"))
         {
             red = 0;
             green = 255;
             blue = 255;
         }
-        else if(color == "magenta" || color == "fuchsia")
+        else if(!strcmp(color, "magenta") || !strcmp(color, "fuchsia"))
         {
             red = 255;
             green = 0;
             blue = 255;
         }
-        else if(color == "maroon")
+        else if(!strcmp(color, "maroon"))
         {
             red = 128;
             green = 0;
             blue = 0;
         }
-        else if(color == "olive")
+        else if(!strcmp(color, "olive"))
         {
             red = 128;
             green = 128;
             blue = 0;
         }
-        else if(color == "green")
+        else if(!strcmp(color, "green"))
         {
             red = 0;
             green = 128;
             blue = 0;
         }
-        else if(color == "purple")
+        else if(!strcmp(color, "purple"))
         {
             red = 128;
             green = 0;
             blue = 128;
         }
-        else if(color == "teal")
+        else if(!strcmp(color, "teal"))
         {
             red = 0;
             green = 128;
             blue = 128;
         }
-        else if(color == "navy")
+        else if(!strcmp(color, "navy"))
         {
             red = 0;
             green = 0;
@@ -316,21 +316,22 @@ int main (int argc, char *argv[])
             exit(1);
         }
 
-        char* number = strtok(NULL, "_");
+        char* number = strtok(NULL, "\0");
         int percentage = atoi(number);
-        if(percentage > 100 || percentage < 0)
+        if(percentage > 100 || percentage <= 0)
         {
-            printf("ERROR!\n");
+            printf("Error with entered percentage!\n");
             fclose(fpfile1);
             fclose(fpfile2);
             remove(file2);
             printf("Oops...file named '%s' got corrupted! File deleted automatically\n", file2);
             exit(1);
         }
-        agrey(mainarray, duparray, x, y, red, green, blue, percentage);
+        agrey(mainarray, duparray, x, y, red, green, blue, percentage, fpfile1, fpfile2);
     }
     else if(command[0] == '-' && (command[1] == 'p' || command[1] == 'P') && (command[2] > 47 && command[2] < 58))                         
     {
+        printf("DEBUG MESSAGE: INSIDE COMMANDS IF STATEMENT\n");
         int restriction_num;
         // pallet color restriction
         strtok(command,"p");
@@ -358,7 +359,7 @@ int main (int argc, char *argv[])
         // dublicates image
         dublicate(mainarray, duparray, x, y);
     }
-    else if(commandcheck(command, "-ndl"))
+    else if(commandcheck(command, "-rl"))
     {
         // rotate image -90 degrees
         // printf("DEBUG FLAAAG\n");
@@ -378,7 +379,7 @@ int main (int argc, char *argv[])
         x = y;
         y = temp;
     }
-    else if(commandcheck(command, "-ndr"))
+    else if(commandcheck(command, "-rr"))
     {
         // rotate image 90 degrees
         printf("DEBUG MESSAGE: before rotate_left\n");
@@ -396,7 +397,7 @@ int main (int argc, char *argv[])
         x = y;
         y = temp;
     }
-    else if(commandcheck(command, "-oed"))
+    else if(commandcheck(command, "-ru"))
     {
         printf("DEBUG MESSAGE: before rotate_right\n");
         // rotate image 180 degrees
@@ -430,6 +431,13 @@ int main (int argc, char *argv[])
             }
         } */
 
+        // calculating padding again in case of new dimensions
+        extrabytes = 0;
+        while((y * 3 + extrabytes) % 4 != 0)
+        {
+            extrabytes++;
+        }
+
         // write output file from secondary array (duparray) 
         unsigned char nullbyte = 0;
         for(i = (x-1); i >= 0; i--)
@@ -445,7 +453,7 @@ int main (int argc, char *argv[])
             {
                 fwrite(&(nullbyte), sizeof(unsigned char), 1, fpfile2);
             }
-            loading_screen ("finalizing image", (x-1)-i, x-1);
+            loading_screen ("finalizing image", (x-1)-i, x-1, 3);
         }
         // printf("DEBUG: extrabytes == %d\n", extrabytes);
     }
@@ -458,16 +466,16 @@ int main (int argc, char *argv[])
     }
 
     //frees all allocated memmory
-    if(commandcheck(command, "-ndl") || commandcheck(command, "-ndr") || commandcheck(command, "-oed"))
+    if(commandcheck(command, "-ndl") || commandcheck(command, "-ndr"))
     {
         int temp = x;
         x = y;
         y = temp;
-        free_all_mem2(mainarray, duparray, x, y, h1, h2);
+        free_all_mem2(mainarray, duparray, x, y, h1, h2, file1, file2);
     }
     else
     {
-        free_all_mem(mainarray, duparray, x, h1, h2);
+        free_all_mem(mainarray, duparray, x, h1, h2, file1, file2);
     }
 
 

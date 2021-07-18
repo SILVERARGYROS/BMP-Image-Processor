@@ -26,17 +26,28 @@ TO-DO LIST
     14.1) ask for file type
 15) polishing/*  */
 16) build/publish final compressed file /*  */
-//  16.1) ask for file contents
- 16.2) write names on each file 
+    // 16.1) ask for file contents
+    16.2) write names on each file 
+    16.3) FILE CONTENTS
+        1) main.c
+        2) processing.c
+        3) processing.h
+        4) bmp.c
+        5) bmp.h
+        6) Makefile
+        7) results/images
+        8) Report
+
 
 BONUS IDEAS
+
 // 1) command -b   (BONUS)
 // 2) loading screen (BONUS)
-// 3) case insensitive commands (BONUS) 
-4) flip 90 left
-5) flip 90 right
-6) flip 180
-7) dublicate image
+// // 3) case insensitive commands (BONUS) 
+// 4) flip 90 left
+// 5) flip 90 right
+// 6) flip 180
+// 7) dublicate image
 // 8) check file2 existance
 
 // afk screen for a while sowwy
