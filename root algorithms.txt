@@ -1,0 +1,15 @@
+// indian algorithm found on youtube
+    /* for(root = 0.01; root*root < sum; root = root + 0.01)
+    {
+        // the root is modified automatically so the rest is empty
+    } */
+
+// american algorithm found on web
+    /* float temp, root;
+    root = sum/2;
+    temp = 0;;
+    while(root != temp)
+    {
+        temp = root;
+        root = (sum/temp + temp)/2;
+    } */
